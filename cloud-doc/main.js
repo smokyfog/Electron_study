@@ -12,4 +12,6 @@ app.on('ready', () => {
   })
   const urlLocation = isDev ? 'http://localhost:3000' : 'http://bk.yanqiang.xyz'
   mainWindow.loadURL(urlLocation)
+  // 打开devtron
+  mainWindow.webContents.openDevTools()
 })
