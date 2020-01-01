@@ -1,8 +1,9 @@
 
-import { useState, useEffect } from 'react'
+import React, { useState, useEffect } from 'react'
 
 const useKeyPress = (targetKeyCode) => {
   const [ keyPressed, setKeyPressed ] = useState(false)
+
   const keyDownHandler = ({ keyCode }) => {
     if (keyCode === targetKeyCode) {
       setKeyPressed(true)
@@ -14,7 +15,7 @@ const useKeyPress = (targetKeyCode) => {
     }
   }
   useEffect(() => {
-    document.addEventListener('keyDown', keyDownHandler)
+    document.addEventListener('keydown', keyDownHandler)
     document.addEventListener('keyup', keyUpHandler)
     return () => {
       document.removeEventListener('keyDown', keyDownHandler)

@@ -7,13 +7,14 @@ import useKeyPress from '../hooks/usekeypress'
 const FileSearch = ({ title, onFileSearch }) => {
   const [ inputActive, setInputActive ] = useState(false)
   const [ value, setValue ] = useState('')
-  const enterPressed = useKeyPress(12)
+  const enterPressed = useKeyPress(13)
   const escPressed = useKeyPress(27)
   // 使用useRef记住dom节点
   let node = useRef(null)
   const closeSearch = () => {
     setInputActive(false)
     setValue('')
+    onFileSearch('')
   }
   useEffect(() => { 
     if (enterPressed && inputActive) {
@@ -41,7 +42,10 @@ const FileSearch = ({ title, onFileSearch }) => {
     }
   }, [inputActive])
   return (
-    <div className="alert alert-primary d-flex justify-content-between align-items-center mb-0">
+    <div 
+      className="alert alert-primary d-flex justify-content-between align-items-center mb-0"
+      style={{ borderRadius: 0 }}
+    >
       { !inputActive &&
         <>
           <span>{ title }</span>

@@ -46,6 +46,7 @@
     "cross-env": "^6.0.3",
     "electron": "^7.1.4",
     "electron-is-dev": "^1.1.0",
+    "uuid": "^3.3.3",
     "wait-on": "^3.3.0"
   }
 }

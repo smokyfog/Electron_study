@@ -15,7 +15,7 @@ const TabList = ({
   return (
     <ul className="nav nav-pills tablist-component">
       { files.map(file => {
-        const withUnsavedMark = unsaveIds.includes(file.id)
+        const withUnsavedMark = file && unsaveIds.includes(file.id)
         const fClassName = classNames({
           'nav-link': true,
           'active': file.id === activeId,
@@ -57,6 +57,7 @@ TabList.propTypes = {
 }
 
 TabList.defaultProps = {
+  unsaveIds: [],
   unsaveIds: []
 }
 
