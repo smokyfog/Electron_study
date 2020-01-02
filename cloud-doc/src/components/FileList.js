@@ -7,22 +7,27 @@ import { faMarkdown } from '@fortawesome/free-brands-svg-icons'
 const FileList = ({ files, onFileClick, onSaveEdit, onFileDelete }) => {
   const [ editStatus, setEditStatus ] = useState(false)
   const [ value, setValue ] = useState('')
-  const closeSearch = (e) => {
+  let node = useRef(null)
+  const closeSearch = (e, editItem) => {
     e.preventDefault()
     setEditStatus(false)
     setValue('')
+    if (editItem.isNew) {
+      onFileDelete(editItem.id)
+    }
   }
+  // 事件
   useEffect(() => { 
     const handleInoutEvent = (event
       ) => {
       const { keyCode } = event
-      if (keyCode === 13 && editStatus) {
-        const editItem = files.find(file => file.id === editStatus)
+      const editItem = files.find(file => file.id === editStatus)
+      if (keyCode === 13 && editStatus && value.trim() !== '') {
         onSaveEdit(editItem.id, value)
         setEditStatus(false)
         setValue('')
       } else if (keyCode === 27 && editStatus){
-        closeSearch(event)
+        closeSearch(event, editItem)
       }
     }
     document.addEventListener('keyup', handleInoutEvent)
@@ -30,6 +35,20 @@ const FileList = ({ files, onFileClick, onSaveEdit, onFileDelete }) => {
       document.removeEventListener('keyup', handleInoutEvent)
     }
   })
+  // 新建逻辑
+  useEffect(() => {
+    const newFile = files.find(file => file.isNew)
+    if (newFile) {
+      setEditStatus(newFile.id)
+      setValue(newFile.title)
+    }
+  }, [files])
+
+  useEffect(() => {
+    if (editStatus) {
+      node.current.focus()
+    }
+  }, [editStatus]);
   return (
     <ul className="list-group list-group-flush file-list">
       {
@@ -39,7 +58,7 @@ const FileList = ({ files, onFileClick, onSaveEdit, onFileDelete }) => {
             key={ file.id }
           >
             {
-              (file.id !== editStatus) &&
+              ((file.id !== editStatus) && !files.isNew) &&
               <>
                 <span className="col-2">
                   <FontAwesomeIcon
@@ -78,17 +97,19 @@ const FileList = ({ files, onFileClick, onSaveEdit, onFileDelete }) => {
               </>
             }
             {
-              (file.id === editStatus) &&
+              ((file.id === editStatus) || files.isNew) &&
               <>
                 <input
                   className="form-control col-10"
                   value={ value }
+                  ref={ node }
+                  placeholder='请输入文件名称'
                   onChange={(e) => { setValue(e.target.value) }}
                 />
                 <button
                   type="button"
                   className="icon-button col-2"
-                  onClick={ closeSearch }
+                  onClick={(e)  => closeSearch(e, file) }
                 >
                   <FontAwesomeIcon
                     title="关闭"
