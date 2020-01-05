@@ -31,3 +31,11 @@
 .no-border {
   border-radius: 0 !important;
 }
+
+.MDE {
+  height: calc(100% - 40px);
+}
+
+.CodeMirror {
+  height: calc(100% - 82px) !important;
+}

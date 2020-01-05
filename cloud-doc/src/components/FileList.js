@@ -3,6 +3,12 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faEdit, faTrash, faTimes } from '@fortawesome/free-solid-svg-icons'
 import { faMarkdown } from '@fortawesome/free-brands-svg-icons'
  import PropTypes from "prop-types";
+ import useContextMenu from '../hooks/useContextMenu'
+ import { getParentNode } from '../utils/helper.js'
+
+// require node.js module
+const { remote } = window.require('electron')
+const { Menu, MenuItem } = remote
 
 const FileList = ({ files, onFileClick, onSaveEdit, onFileDelete }) => {
   const [ editStatus, setEditStatus ] = useState(false)
@@ -16,6 +22,41 @@ const FileList = ({ files, onFileClick, onSaveEdit, onFileDelete }) => {
       onFileDelete(editItem.id)
     }
   }
+  const clickItem = useContextMenu([
+    {
+      label: '打开',
+      click: () => {
+        const parentElement = getParentNode(clickItem.current, 'file-item')
+        if (parentElement.dataset.id) {
+          onFileClick(parentElement.dataset.id)
+        }
+      }
+    },
+    {
+      label: '重命名',
+      click: () => {
+        const parentElement = getParentNode(clickItem.current, 'file-item')
+        console.log('rename')
+        if (parentElement.dataset.id) {
+          // onFileClick(parentElement.dataset.id)
+          setEditStatus(parentElement.dataset.id)
+          setValue(parentElement.dataset.title)
+        }
+      }
+    },
+    {
+      label: '删除',
+      click: () => {
+        console.log('deleteing')
+        const parentElement = getParentNode(clickItem.current, 'file-item')
+        console.log('rename')
+        if (parentElement.dataset.id) {
+          // onFileClick(parentElement.dataset.id)
+          onFileDelete(parentElement.dataset.id)
+        }
+      }
+    }
+  ], '.file-list', [files])
   // 事件
   useEffect(() => { 
     const handleInoutEvent = (event
@@ -23,7 +64,7 @@ const FileList = ({ files, onFileClick, onSaveEdit, onFileDelete }) => {
       const { keyCode } = event
       const editItem = files.find(file => file.id === editStatus)
       if (keyCode === 13 && editStatus && value.trim() !== '') {
-        onSaveEdit(editItem.id, value)
+        onSaveEdit(editItem.id, value, editItem.isNew)
         setEditStatus(false)
         setValue('')
       } else if (keyCode === 27 && editStatus){
@@ -56,6 +97,8 @@ const FileList = ({ files, onFileClick, onSaveEdit, onFileDelete }) => {
           <li
             className="list-group-item bg-light d-flex row align-items-center file-item mx-0"
             key={ file.id }
+            data-id={ file.id }
+            data-title={ file.title }
           >
             {
               ((file.id !== editStatus) && !files.isNew) &&
@@ -72,7 +115,7 @@ const FileList = ({ files, onFileClick, onSaveEdit, onFileDelete }) => {
                 >
                   { file.title }
                 </span>
-                <button
+                {/* <button
                   type="button"
                   className="icon-button col-2"
                   onClick={() => { setEditStatus(file.id); setValue(file.title); }}
@@ -93,7 +136,7 @@ const FileList = ({ files, onFileClick, onSaveEdit, onFileDelete }) => {
                     size="lg"
                     icon={ faTrash }
                   />
-                </button>
+                </button> */}
               </>
             }
             {

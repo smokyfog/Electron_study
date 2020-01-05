@@ -11,3 +11,11 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.MDE {
+  height: calc(100% - 40px);
+}
+
+.CodeMirror-wrap {
+  height: calc(100% - 82px);
+}
