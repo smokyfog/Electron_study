@@ -1,18 +1,33 @@
-const { app, BrowserWindow, Menu } = require('electron')
+const { app, BrowserWindow, Menu, ipcMain } = require('electron')
 const isDev = require('electron-is-dev')  // 用于判断当前环境
 const menuTemplate = require('./src/menuTemplate')
-let mainWindow;
+const AppWindow = require('./src/AppWindow')
+const path = require('path')
+let mainWindow, settingsWindow;
 
 app.on('ready', () => {
-  mainWindow = new BrowserWindow({
+  const mainWindwConfig = {
     width: 1024,
     height: 680,
-    webPreferences: {
-      nodeIntegration: true
-    }
-  })
+  }
   const urlLocation = isDev ? 'http://localhost:3000' : 'http://bk.yanqiang.xyz'
-  mainWindow.loadURL(urlLocation)
+  mainWindow = new AppWindow(mainWindwConfig, urlLocation)
+  mainWindow.on('closed', () => {
+    mainWindow = null
+  })
+  // hook up main event
+  ipcMain.on('open-settings-window', () => {
+    const settingsWindowConfig = {
+      width: 500,
+      height: 400,
+      parent: mainWindow
+    }
+    const settingsFileLocation = `file://${path.join(__dirname, './settings/settings.html')}`
+    settingsWindow = new AppWindow(settingsWindowConfig, settingsFileLocation)
+    settingsWindow.on('closed', () => {
+      mainWindow = null
+    })
+  })
   // 打开devtron
   mainWindow.webContents.openDevTools()
   // set the menu

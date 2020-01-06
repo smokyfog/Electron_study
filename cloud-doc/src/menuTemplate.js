@@ -1,5 +1,5 @@
 
-const { app, shell } = require('electron')
+const { app, shell, ipcMain } = require('electron')
 
 const template = [
   {
@@ -161,7 +161,7 @@ if (process.platform === 'darwin') {
         label: '设置',
         accelerator: 'Command+,',
         click: () => {
-
+          ipcMain.emit('open-settings-window')
         }
       }, 
       {
@@ -198,6 +198,16 @@ if (process.platform === 'darwin') {
       }
     ]
   })
+} else {
+  template[0].submenu.push(
+    {
+      label: '设置',
+      accelerator: 'Ctrl+,',
+      click: () => {
+        ipcMain.emit('open-settings-window')
+      }
+    }
+  )
 }
 
 
