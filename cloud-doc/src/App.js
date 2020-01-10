@@ -20,6 +20,7 @@ const { join, basename, extname, dirname } = window.require('path')
 const { remote } = window.require('electron')
 const Store = window.require('electron-store')
 const FileStore = new Store({ 'name': 'Files Data' })
+const settingsStore = new Store({ name: 'Settings' })
 const saveFileToStore = (files) => {
   // we don't have to store any info in file system ,eg: isnew, body, etc
   const fileStoreObj = objToArr(files).reduce((result, file) => {
@@ -51,7 +52,7 @@ function App() {
   const [ unsavedFileIDs, setUnsaveFileIDs ] = useState([])
   const [ searchFiles, setSearchFiles ] = useState([])
   const filesArr = objToArr(files)
-  const saveLocation = remote.app.getPath('documents')
+  const saveLocation =  settingsStore.get('savedFileLocation') || remote.app.getPath('documents')
   const activeFile =  files[activeFileID]
   const openedFiles = openedFileIDs.map(openID => {
     return files[openID]
@@ -139,7 +140,7 @@ function App() {
     // newPath should be different based on isNew
     // if isNew is flase, path should be old dirname + new title
     const newPath = isNew 
-      ? join(saveLocation, `/md/${title}.md`) 
+      ? join(saveLocation, `/${title}.md`) 
       : join(dirname(files[id].path), `${title}.md`)
     const modifiedFile = { ...files[id], title, isNew: false, path: newPath }
     const newFiles = { ...files, [id]: modifiedFile }

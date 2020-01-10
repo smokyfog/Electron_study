@@ -19,3 +19,7 @@ code {
 .CodeMirror-wrap {
   height: calc(100% - 82px);
 }
+
+.nav-pills .nav-link {
+  border-radius: 0 !important;
+}
