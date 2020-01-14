@@ -1,4 +1,6 @@
 const qiniu = require('qiniu')
+const axios = require('axios')
+const fs = require('fs')
 
 class QiniuManager {
   constructor(accessKey, secretKey, bucket) {
@@ -62,6 +64,33 @@ class QiniuManager {
       } else {
         throw Error('域名未找到， 请查看储存空间是否过期')
       }
+    })
+  }
+
+  // 下载文件
+  downLoadFile(key, downLoadPath) {
+    // 获取下载连接
+    // 发送请求 返回一个可读流
+    // 创建一个writable stream and pipe to it
+    // 返回一个promise结果
+    return this.generateDownloadLink(key).then(link => {
+      const timeStamp = new Date().getTime()
+      const url =  `${link}?timestamp=${timeStamp}`
+      return axios({
+        url,
+        method: 'GET',
+        responseType: 'stream',
+        headers: { 'Cache-Control': 'no-cache' }
+      })
+    }).then(response => {
+      const writer = fs.createWriteStream(downLoadPath)
+      response.data.pipe(writer)
+      return new Promise((resolve, reject) => {
+        writer.on('finish', resolve)
+        writer.on('error', reject)
+      })
+    }).catch(err => {
+      return Promise.reject({err: err.response})
     })
   }
 
