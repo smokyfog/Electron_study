@@ -2,7 +2,6 @@ const qiniu = require('qiniu')
 const QiniuManager = require('./src/utils/QiniuManager')
 const path = require('path')
 
-
 var accessKey = 'hoFpxX2IdHXjDc7jVSDRYrMPJsV0xk1QqH288R6J'
 var secretKey = 'ZW4RDTOITtv4G1dqoF5lRcXzUx4ZN3XeUEGNteZ4'
 var localFile = "/Users/yanqiang/Documents/md/test1.md"
@@ -17,9 +16,9 @@ const manager = new QiniuManager(accessKey, secretKey, 'electron-notes')
 //   console.log('删除成功', data)
 // })
 
-// manager.uploadFile(key, localFile).then(data => {
-//   console.log('上传成功', data)
-// })
+manager.uploadFile(key, localFile).then(data => {
+  console.log('上传成功', data)
+})
 // manager.getBuckteDomain().then(data => {
 //   console.log(data)
 // })
